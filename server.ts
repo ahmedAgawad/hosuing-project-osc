@@ -4,6 +4,7 @@ import { connectDB } from "./config/db.js";
 import authRoutes from "./routes/auth.routes.js";
 import dns from "node:dns/promises";
 import listingrouter from "./routes/routes.listing.js";
+import interestRequestRouter from "./routes/InterestRequest.routes.js";
 
 dns.setServers(["1.1.1.1"]);
 
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 
 app.use("/api/listings",listingrouter)
+app.use("/api/interest-requests", interestRequestRouter);
 
 connectDB().then(() => {
 	app.listen(port, () => {
