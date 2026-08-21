@@ -14,15 +14,6 @@ const options: swaggerJSDoc.Options = {
 				description: process.env.EXTERNAL_URL ? "Production server" : "Local server",
 			},
 		],
-		components: {
-			securitySchemes: {
-				bearerAuth: {
-					type: "http",
-					scheme: "bearer",
-					bearerFormat: "JWT",
-				},
-			},
-		},
 	},
 	apis: [
 		"./routes/*.ts",

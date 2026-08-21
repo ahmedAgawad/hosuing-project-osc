@@ -59,8 +59,6 @@ router.get("/:id",logger, getListingById);
  *   post:
  *     tags: [Listings]
  *     summary: create a new Listing
- *     security:
- *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -86,8 +84,6 @@ router.post("/",logger, authenticate, authorize("Lister"), validateCreateListing
  *   patch:
  *     tags: [Listings]
  *     summary: Update an existing listing
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -122,8 +118,6 @@ router.patch("/:id",logger, authenticate, authorize("Lister"), updateListing);
  *   delete:
  *     tags: [Listings]
  *     summary: Delete a listing by ID
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id

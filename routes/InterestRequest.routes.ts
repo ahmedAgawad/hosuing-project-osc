@@ -19,8 +19,6 @@ const router = Router();
  *   post:
  *     tags: [Interest Requests]
  *     summary: Submit a new interest request
- *     security:
- *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -39,15 +37,13 @@ const router = Router();
  *       500:
  *         description: Some server error!
  */
-router.post("/",logger, authenticate, authorize("Seeker"), submitInterestRequest);
+router.post("/", logger, authenticate, authorize("Seeker"), submitInterestRequest);
 /**
  * @swagger
  * /api/interest-requests:
  *   get:
  *     tags: [Interest Requests]
  *     summary: Get interest requests history for the logged-in seeker
- *     security:
- *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Successfully retrieved interest requests history
@@ -64,15 +60,13 @@ router.post("/",logger, authenticate, authorize("Seeker"), submitInterestRequest
  *       500:
  *         description: Some server error!
  */
-router.get("/",logger, authenticate, authorize("Seeker"), getMyRequestHistory);
+router.get("/", logger, authenticate, authorize("Seeker"), getMyRequestHistory);
 /**
  * @swagger
  * /api/interest-requests/{id}:
  *   delete:
  *     tags: [Interest Requests]
  *     summary: Cancel/Delete a seeker's own interest request
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -93,7 +87,7 @@ router.get("/",logger, authenticate, authorize("Seeker"), getMyRequestHistory);
  *       500:
  *         description: Some server error!
  */
-router.delete("/:id",logger, authenticate, authorize("Seeker"), cancelOwnRequest);
+router.delete("/:id", logger, authenticate, authorize("Seeker"), cancelOwnRequest);
 
 // Lister routes
 /**
@@ -102,8 +96,6 @@ router.delete("/:id",logger, authenticate, authorize("Seeker"), cancelOwnRequest
  *   get:
  *     tags: [Interest Requests]
  *     summary: Get all interest requests for a specific listing (Lister only)
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -130,15 +122,13 @@ router.delete("/:id",logger, authenticate, authorize("Seeker"), cancelOwnRequest
  *       500:
  *         description: Some server error!
  */
-router.get("/listing/:id",logger, authenticate, authorize("Lister"), getRequestsForListing);
+router.get("/listing/:id", logger, authenticate, authorize("Lister"), getRequestsForListing);
 /**
  * @swagger
  * /api/interest-requests/{id}:
  *   patch:
  *     tags: [Interest Requests]
  *     summary: Update interest request status (Lister only)
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -167,6 +157,13 @@ router.get("/listing/:id",logger, authenticate, authorize("Lister"), getRequests
  *       500:
  *         description: Some server error!
  */
-router.patch("/:id",logger, authenticate, authorize("Lister"), validateRequestUpdate, updateRequestStatus);
+router.patch(
+	"/:id",
+	logger,
+	authenticate,
+	authorize("Lister"),
+	validateRequestUpdate,
+	updateRequestStatus,
+);
 
 export default router;
