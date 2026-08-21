@@ -8,7 +8,7 @@ export const submitInterestRequest = async (req: Request, res: Response) => {
 	try {
 		const seekerId = req.user!.id;
 		const { listingId } = req.body;
-		if (!listingId) {
+		if (!listingId || !mongoose.Types.ObjectId.isValid(listingId)) {
 			res.status(400).json({ message: "listing ID is required for submitting request" });
 			return;
 		}
@@ -69,8 +69,15 @@ export const getMyRequestHistory = async (req: Request, res: Response) => {
 export const cancelOwnRequest = async (req: Request, res: Response) => {
 	try {
 		const seekerId = req.user!.id;
-		const requestId = req.params.id;
+		const requestId = req.params.id as string;
+
+		if (!requestId || !mongoose.Types.ObjectId.isValid(requestId)) {
+			res.status(400).json({ message: "Invalid request ID format" });
+			return;
+		}
+
 		const request = await InterestRequest.findById(requestId);
+
 		if (!request) {
 			res.status(404).json({ message: "request not found" });
 			return;
@@ -94,8 +101,15 @@ export const cancelOwnRequest = async (req: Request, res: Response) => {
 export const getRequestsForListing = async (req: Request, res: Response) => {
 	try {
 		const listerId = req.user!.id;
-		const listingObjectId = new mongoose.Types.ObjectId(req.params.id as string);
-		const listing = await Listing.findById(listingObjectId);
+		const { id } = req.params;
+
+		if (!id || typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+			res.status(400).json({ message: "Invalid listing ID format" });
+			return;
+		}
+
+		const listing = await Listing.findById(id);
+
 		if (!listing) {
 			res.status(404).json({ message: "listing not found" });
 			return;
@@ -104,7 +118,7 @@ export const getRequestsForListing = async (req: Request, res: Response) => {
 			res.status(403).json({ message: "you are not the owner of this listing" });
 			return;
 		}
-		const requests = await InterestRequest.find({ listing: listingObjectId });
+		const requests = await InterestRequest.find({ listing: id });
 		if (requests.length === 0) {
 			res.status(200).json({ message: "no interest requests found for this listing" });
 			return;
@@ -119,8 +133,14 @@ export const getRequestsForListing = async (req: Request, res: Response) => {
 export const updateRequestStatus = async (req: Request, res: Response) => {
 	try {
 		const listerId = req.user!.id;
-		const requestId = req.params.id;
+		const requestId = req.params.id as string;
 		const { status } = req.body;
+
+		if (!requestId || !mongoose.Types.ObjectId.isValid(requestId)) {
+			res.status(400).json({ message: "Invalid request ID format" });
+			return;
+		}
+
 		if (!["accepted", "declined"].includes(status)) {
 			res.status(400).json({ message: "invalid status : Must be 'accepted' or 'declined'" });
 			return;
