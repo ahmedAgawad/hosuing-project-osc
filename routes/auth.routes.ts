@@ -1,10 +1,8 @@
 import { Router } from "express";
 import { register, login } from "../controllers/auth.controller.js";
-import { authenticate, authorize } from "../middleware/auth.middleware.js";
-import {logger} from "../middleware/Logger.middleware";
-import {validateRegister} from "../middleware/UserRegistration.middleware";
+import { logger } from "../middleware/Logger.middleware.js";
+import { validateRegister } from "../middleware/UserRegistration.middleware.js";
 const router = Router();
-
 
 /**
  * @swagger
@@ -22,11 +20,11 @@ const router = Router();
  *       201:
  *         description: User registered successfully
  *       400:
- *         description: Bad request - Validation failed 
+ *         description: Bad request - Validation failed
  *       500:
  *         description: Some server error!
  */
-router.post("/register", logger , validateRegister , register);
+router.post("/register", logger, validateRegister, register);
 /**
  * @swagger
  * /api/auth/login:
@@ -57,27 +55,7 @@ router.post("/register", logger , validateRegister , register);
  *       500:
  *         description: Some server error!
  */
-router.post("/login",logger, login);
+router.post("/login", logger, login);
 
-// router.get("/test/protected", authenticate, (req, res) => {
-// 	res.status(200).json({
-// 		message: "authenticated successfully!",
-// 		user: req.user,
-// 	});
-// });
-
-// router.get("/test/lister-only", authenticate, authorize("Lister"), (req, res) => {
-// 	res.status(200).json({
-// 		message: "welcome lister You have access to listing management",
-// 		user: req.user,
-// 	});
-// });
-
-// router.get("/test/seeker-only", authenticate, authorize("Seeker"), (req, res) => {
-// 	res.status(200).json({
-// 		message: "welcome seeker! You have access to interest requests",
-// 		user: req.user,
-// 	});
-// });
 
 export default router;
