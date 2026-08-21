@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Listing } from "../models/listing.model.js";
 import { InterestRequest } from "../models/InterestRequest.model.js";
+import mongoose from "mongoose";
 
 // Create a listing
 export const createListing = async (req: Request, res: Response) => {
@@ -68,6 +69,11 @@ export const getListingById = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
 
+		if (!id || typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+			res.status(400).json({ message: "Invalid listing ID format" });
+			return;
+		}
+
 		const listing = await Listing.findById(id).populate("owner", "fullName email");
 
 		if (!listing) {
@@ -89,6 +95,12 @@ export const getListingById = async (req: Request, res: Response) => {
 export const updateListing = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
+
+		if (!id || typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+			res.status(400).json({ message: "Invalid listing ID format" });
+			return;
+		}
+
 		const listing = await Listing.findById(id);
 
 		if (!listing) {
@@ -105,10 +117,9 @@ export const updateListing = async (req: Request, res: Response) => {
 
 		const { location, price, roomsAvailable, description } = req.body;
 
-		if (price <= 0 && price !== undefined) {
-			return res.status(400).json({
-				message: "price must be a positive number",
-			});
+		if (price !== undefined && (typeof price !== "number" || price <= 0)) {
+			res.status(400).json({ message: "Price must be a positive number" });
+			return;
 		}
 
 		if (location) listing.location = location;
@@ -131,11 +142,13 @@ export const updateListing = async (req: Request, res: Response) => {
 export const deleteListing = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
-		const listing = await Listing.findById(id);
 
-		if (!id || typeof id !== "string") {
-			return res.status(400).json({ message: "Invalid listing ID" });
+		if (!id || typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+			res.status(400).json({ message: "invalid listing ID format" });
+			return;
 		}
+
+		const listing = await Listing.findById(id);
 
 		if (!listing) {
 			return res.status(404).json({
