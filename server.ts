@@ -3,7 +3,7 @@ import express from "express";
 import { connectDB } from "./config/db.js";
 import authRoutes from "./routes/auth.routes.js";
 import dns from "node:dns/promises";
-import listingrouter from "./routes/routes.listing.js";
+import listingrouter from "./routes/listing.routes.js";
 import swaggerUi from "swagger-ui-express";
 import {swaggerSpec} from "./config/swaggerConfig.js";
 import interestRequestRouter from "./routes/InterestRequest.routes.js";

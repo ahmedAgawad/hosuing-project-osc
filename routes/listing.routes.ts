@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {createListing,getListings,getListingById,updateListing,deleteListing} from "../controllers/controllers.listing";
+import {createListing,getListings,getListingById,updateListing,deleteListing} from "../controllers/listing.controller";
 import { authenticate, authorize } from "../middleware/auth.middleware";
 import {validateCreateListing} from "../middleware/ListingCreation.middleware";
 import {logger} from "../middleware/Logger.middleware";
