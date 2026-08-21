@@ -140,11 +140,6 @@ export const updateRequestStatus = async (req: Request, res: Response) => {
 			res.status(400).json({ message: "Invalid request ID format" });
 			return;
 		}
-
-		if (!["accepted", "declined"].includes(status)) {
-			res.status(400).json({ message: "invalid status : Must be 'accepted' or 'declined'" });
-			return;
-		}
 		const request = await InterestRequest.findById(requestId);
 		if (!request) {
 			res.status(404).json({ message: "request not found" });

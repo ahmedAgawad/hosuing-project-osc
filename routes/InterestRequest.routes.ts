@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { authenticate, authorize } from "../middleware/auth.middleware.js";
+import { validateRequestUpdate } from "../middleware/RequestUpdate.middleware.js";
 import {
 	submitInterestRequest,
 	getMyRequestHistory,
@@ -17,6 +18,6 @@ router.delete("/:id", authenticate, authorize("Seeker"), cancelOwnRequest);
 
 // Lister routes
 router.get("/listing/:id", authenticate, authorize("Lister"), getRequestsForListing);
-router.patch("/:id", authenticate, authorize("Lister"), updateRequestStatus);
+router.patch("/:id", authenticate, authorize("Lister"), validateRequestUpdate, updateRequestStatus);
 
 export default router;
