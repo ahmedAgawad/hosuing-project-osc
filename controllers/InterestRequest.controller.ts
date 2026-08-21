@@ -1,0 +1,137 @@
+import { Request, Response } from "express";
+import { InterestRequest } from "../models/InterestRequest.model.js";
+import { Listing } from "../models/listing.model.js";
+import mongoose from "mongoose";
+
+// Seeker: submit a new interest request on a listing
+export const submitInterestRequest = async (req: Request, res: Response) => {
+    try {
+        const seekerId = req.user!.id;
+        const { listingId } = req.body;
+        if (!listingId) {
+            res.status(400).json({ message: "Listing ID is required." });
+            return;
+        }
+        const listing = await Listing.findById(listingId);
+        if (!listing) {
+            res.status(404).json({ message: "Listing not found for this ID." });
+            return;
+        }
+        if (listing.owner.toString() === seekerId) {
+            res.status(403).json({ message: "Listers cannot send an interest request on their own listing." });
+            return;
+        }
+        const existingRequest = await InterestRequest.findOne({ listing: listingId, seeker: seekerId });
+        if (existingRequest) {
+            res.status(400).json({ message: "You have already submitted an interest request for this listing." });
+            return;
+        }
+        const newRequest  = await InterestRequest.create({
+            listing: listingId,
+            seeker: seekerId,
+        });
+        res.status(201).json({ message: "Interest request submitted successfully.", request: newRequest });
+    }catch (error) {
+        res.status(500).json({ message: "Internal server error while submitting interest request", error });
+    }
+};
+
+// Seeker: get their request history
+export const getMyRequestHistory = async (req: Request, res: Response) => {
+    try {
+        const seekerId = req.user!.id;  
+        const seekerRequests = await InterestRequest.find({ seeker: seekerId });
+        if (seekerRequests.length === 0){
+            res.status(404).json({ message: "No interest requests found." });
+            return;
+        }
+        res.status(200).json(seekerRequests);
+    }catch (error) {
+        res.status(500).json({ message: "Internal server error while fetching request history", error });
+    }
+};
+
+// Seeker: cancel own pending request
+export const cancelOwnRequest = async (req: Request, res: Response) => {
+    try {
+        const seekerId = req.user!.id;
+        const requestId = req.params.id;
+        const request = await InterestRequest.findById(requestId);
+        if (!request) {
+            res.status(404).json({ message: "Request not found." });
+            return;
+        }
+        if (request.seeker.toString() !== seekerId) {
+            res.status(403).json({ message: "You are not the owner of this request." });
+            return;
+        }
+        if (request.status !== "pending") {
+            res.status(400).json({ message: "Only pending requests can be cancelled." });
+            return;
+        }
+        await InterestRequest.deleteOne({ _id: requestId });
+        res.status(200).json({ message: "Request cancelled successfully." });
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error while cancelling request", error });
+    }
+};
+
+// Lister: get all requests for one of their own listings
+export const getRequestsForListing = async (req: Request, res: Response) => {
+    try {
+        const listerId = req.user!.id;
+        const listingObjectId = new mongoose.Types.ObjectId(req.params.id as string);
+        const listing = await Listing.findById(listingObjectId);
+        if (!listing) {
+            res.status(404).json({ message: "Listing not found." });
+            return;
+        }
+        if (listing.owner.toString() !== listerId) {
+            res.status(403).json({ message: "You are not the owner of this listing." });
+            return;
+        }
+        const requests = await InterestRequest.find({ listing: listingObjectId });
+        if (requests.length === 0) {
+            res.status(404).json({ message: "No interest requests found for this listing." });
+            return;
+        }
+        res.status(200).json(requests);
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error while fetching requests", error });
+    }
+};
+
+// Lister: accept or decline a request of their listing
+export const updateRequestStatus = async (req: Request, res: Response) => {
+    try {
+        const listerId = req.user!.id;
+        const requestId = req.params.id;
+        const { status } = req.body;
+        if (!["accepted", "declined"].includes(status)) {
+            res.status(400).json({ message: "Invalid status. Must be 'accepted' or 'declined'." });
+            return;
+        }
+        const request = await InterestRequest.findById(requestId);
+        if (!request) {
+            res.status(404).json({ message: "Request not found." });
+            return;
+        }
+        const listing = await Listing.findById(request.listing);
+        if (!listing) {
+            res.status(404).json({ message: "Listing associated with this request no longer exists." });
+            return;
+        }
+        if (listing.owner.toString() !== listerId) {
+            res.status(403).json({ message: "You are not the owner of this listing." });
+            return;
+        }
+        if (request.status !== "pending") {
+            res.status(400).json({ message: "Only pending requests can be updated." });
+            return;
+        }
+        await InterestRequest.findByIdAndUpdate(requestId, { status });
+        res.status(200).json({ message: "Request status updated successfully." });
+    }catch (error) {
+        res.status(500).json({ message: "Internal server error while updating request status", error });
+    }
+};

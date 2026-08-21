@@ -6,6 +6,7 @@ import dns from "node:dns/promises";
 import listingrouter from "./routes/routes.listing.js";
 import swaggerUi from "swagger-ui-express";
 import {swaggerSpec} from "./config/swaggerConfig.js";
+import interestRequestRouter from "./routes/InterestRequest.routes.js";
 
 dns.setServers(["1.1.1.1"]);
 
@@ -20,6 +21,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/auth", authRoutes);
 
 app.use("/api/listings",listingrouter)
+app.use("/api/interest-requests", interestRequestRouter);
 
 connectDB().then(() => {
 	app.listen(port, () => {
