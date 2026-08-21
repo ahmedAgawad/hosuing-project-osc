@@ -4,25 +4,24 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
 
 const generateToken = (userId: string, role: string): string => {
-	return jwt.sign({ id: userId, role }, process.env.JWT_SECRET as string, { expiresIn: "7d" });
+	return jwt.sign({ id: userId, role }, process.env.JWT_SECRET as string, {
+		expiresIn: "7d",
+	});
 };
 
 export const register = async (req: Request, res: Response) => {
 	try {
 		const { fullName, email, password, role } = req.body;
 
-	
 		const existingUser = await User.findOne({ email });
 		if (existingUser) {
 			res.status(400).json({ message: "email is already in use" });
 			return;
 		}
 
-	
 		const saltRounds = 10;
 		const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-	
 		const newUser = await User.create({
 			fullName,
 			email,
@@ -30,12 +29,12 @@ export const register = async (req: Request, res: Response) => {
 			role,
 		});
 
-
 		const token = generateToken(newUser._id.toString(), newUser.role);
+
+		res.cookie("token", token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
 
 		res.status(201).json({
 			message: "user registered successfully",
-			token,
 			user: {
 				id: newUser._id,
 				fullName: newUser.fullName,
@@ -66,9 +65,10 @@ export const login = async (req: Request, res: Response) => {
 
 		const token = generateToken(user._id.toString(), user.role);
 
+		res.cookie("token", token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
+
 		res.status(200).json({
 			message: "Login successful",
-			token,
 			user: {
 				id: user._id,
 				fullName: user.fullName,
@@ -79,4 +79,9 @@ export const login = async (req: Request, res: Response) => {
 	} catch (error) {
 		res.status(500).json({ message: "internal server error during login", error });
 	}
+};
+
+export const logout = async (_req: Request, res: Response) => {
+	res.clearCookie("token", { httpOnly: true });
+	res.status(200).json({ message: "Logged out successfully" });
 };

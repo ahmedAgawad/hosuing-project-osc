@@ -5,8 +5,9 @@ import authRoutes from "./routes/auth.routes.js";
 import dns from "node:dns/promises";
 import listingrouter from "./routes/listing.routes.js";
 import swaggerUi from "swagger-ui-express";
-import {swaggerSpec} from "./config/swaggerConfig.js";
+import { swaggerSpec } from "./config/swaggerConfig.js";
 import interestRequestRouter from "./routes/InterestRequest.routes.js";
+import cookieParser from "cookie-parser";
 
 dns.setServers(["1.1.1.1"]);
 
@@ -15,14 +16,13 @@ const port = process.env.PORT || 3000;
 
 // nodemon --exec tsx server.ts
 
-
 app.use(express.json());
-
+app.use(cookieParser());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/api/auth", authRoutes);
 
-app.use("/api/listings",listingrouter)
+app.use("/api/listings", listingrouter);
 app.use("/api/interest-requests", interestRequestRouter);
 
 connectDB().then(() => {

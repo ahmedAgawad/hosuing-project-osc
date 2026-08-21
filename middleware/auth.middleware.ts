@@ -14,19 +14,11 @@ declare global {
 	}
 }
 
-
-export const authenticate = (req: Request, res: Response, next: NextFunction): void => {
-	const authHeader = req.headers.authorization;
-
-	if (!authHeader || !authHeader.startsWith("Bearer ")) {
-		res.status(401).json({ message: "access denied no token provided" });
-		return;
-	}
-
-	const token = authHeader.split(" ")[1];
+export const authenticate = (req: Request, res: Response, next: NextFunction) => {
+	const token = req.cookies?.token;
 
 	if (!token) {
-		res.status(401).json({ message: "access denied wrong format token" });
+		res.status(401).json({ message: "access denied no token provided" });
 		return;
 	}
 
@@ -46,7 +38,6 @@ export const authenticate = (req: Request, res: Response, next: NextFunction): v
 		res.status(401).json({ message: "invalid or expired token" });
 	}
 };
-
 
 export const authorize = (...allowedRoles: Array<"Lister" | "Seeker">) => {
 	return (req: Request, res: Response, next: NextFunction): void => {

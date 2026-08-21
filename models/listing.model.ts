@@ -35,7 +35,7 @@ import mongoose from "mongoose";
  *          price: 4500
  *          roomsAvailable: 3
  *          description: Fully furnished 3-bedroom apartment near the main road
- *          owner:knouuguKnnuiuh887878
+ *          owner: knouuguKnnuiuh887878
  * 
  * 
  */ 
