@@ -1,25 +1,19 @@
 import { Request, Response } from "express";
 import { Listing } from "../models/listing.model";
-
+import { InterestRequest } from "../models/InterestRequest.model";
 
 // Create a listing
 export const createListing = async (req: Request, res: Response) => {
   try {
 
+    if(!req.user){
+      return res.status(401).json({
+        message: "Unauthorized"
+      })
+    }
+
     const { location, price, roomsAvailable ,description} = req.body
-    const owner = req.user?.id
-
-    if (!location || !price || !roomsAvailable || !owner || !description) {
-      return res.status(400).json({ 
-        message: "All fields are required" 
-    });
-    }
-
-    if(price <= 0 ){
-        return res.status(400).json({
-            message : "Price must be a positive number"
-        })
-    }
+    const owner = req.user.id
 
     const listing = await Listing.create({ 
         location,
@@ -145,6 +139,10 @@ export const deleteListing = async (req: Request, res: Response) => {
     const { id } = req.params;
     const listing = await Listing.findById(id);
 
+    if (!id || typeof id !== "string") {
+      return res.status(400).json({ message: "Invalid listing ID" });
+    }
+    
     if (!listing) {
       return res.status(404).json({ 
         message: "Listing not found"
@@ -155,6 +153,15 @@ export const deleteListing = async (req: Request, res: Response) => {
       return res.status(403).json({
         message: "You can only delete your own listings"
     })
+    }
+
+
+    const hasAcceptedRequest = await InterestRequest.findOne({listing: id,status: "accepted",});
+
+    if (hasAcceptedRequest) {
+      return res.status(400).json({
+        message: "Cannot delete a listing with accepted interest requests",
+      });
     }
 
     await listing.deleteOne();
