@@ -12,7 +12,7 @@ import cookieParser from "cookie-parser";
 dns.setServers(["1.1.1.1"]);
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = Number(process.env.PORT) || 3000;
 
 // nodemon --exec tsx server.ts
 
@@ -26,7 +26,7 @@ app.use("/api/listings", listingrouter);
 app.use("/api/interest-requests", interestRequestRouter);
 
 connectDB().then(() => {
-	app.listen(port, () => {
+	app.listen(port, "0.0.0.0", () => {
 		console.log(`Server is sailing at http://localhost:${port}`);
 	});
 });
