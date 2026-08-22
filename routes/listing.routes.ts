@@ -46,6 +46,8 @@ router.get("/",logger ,getListings);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Listing'
+ *       400:
+ *         description: Invalid listing id format
  *       404:
  *         description: Listing not found
  *       500:
@@ -128,6 +130,8 @@ router.patch("/:id",logger, authenticate, authorize("Lister"), updateListing);
  *     responses:
  *       200:
  *         description: Listing deleted successfully
+ *       400:
+ *         description: Invalid listing id format
  *       401:
  *         description: Unauthorized - Token is missing or invalid
  *       403:

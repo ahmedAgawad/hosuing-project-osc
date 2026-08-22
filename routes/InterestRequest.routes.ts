@@ -78,6 +78,8 @@ router.get("/", logger, authenticate, authorize("Seeker"), getMyRequestHistory);
  *     responses:
  *       200:
  *         description: Interest request cancelled successfully
+ *       400:
+ *         description: Invalid interest request ID format
  *       401:
  *         description: Unauthorized - Token is missing or invalid
  *       403:
@@ -113,6 +115,8 @@ router.delete("/:id", logger, authenticate, authorize("Seeker"), cancelOwnReques
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/InterestRequest'
+ *       400:
+ *         description: Invalid listing ID format
  *       401:
  *         description: Unauthorized - Token is missing or invalid
  *       403:
