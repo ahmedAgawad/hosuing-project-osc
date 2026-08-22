@@ -40,7 +40,7 @@ export const getListings = async (req: Request, res: Response) => {
 		const query: any = {};
 
 		if (location) {
-			query.location = location;
+			query.location = { $regex: String(location), $options: "i" };
 		}
 
 		if (minPrice || maxPrice) {
