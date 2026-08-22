@@ -97,14 +97,14 @@ router.get("/:id",logger, getListingById);
  *           schema:
  *             type: object
  *             required:
- *               - title
+ *               - roomsAvailable
  *               - description
  *               - price
  *               - location
  *             properties:
- *               title:
+ *               roomsAvailable:
  *                 type: string
- *                 example: "Apartment for rent near university"
+ *                 example: 3
  *               description:
  *                 type: string
  *                 example: "Spacious 3-bedroom apartment, fully furnished."
@@ -148,9 +148,9 @@ router.post("/",logger, authenticate, authorize("Lister"), validateCreateListing
  *           schema:
  *             type: object
  *             properties:
- *               title:
+ *               roomsAvailable:
  *                 type: string
- *                 example: "Updated Apartment Title"
+ *                 example: 4
  *               description:
  *                 type: string
  *                 example: "Updated description for the apartment."
