@@ -39,7 +39,7 @@ const router = Router();
  *         name: roomsAvailable
  *         required: false
  *         schema:
- *           type: integer
+ *           type: number
  *         description: Filter by number of available rooms
  *         example: 2
  *     responses:
@@ -103,7 +103,7 @@ router.get("/:id",logger, getListingById);
  *               - location
  *             properties:
  *               roomsAvailable:
- *                 type: string
+ *                 type: number
  *                 example: 3
  *               description:
  *                 type: string
@@ -149,11 +149,11 @@ router.post("/",logger, authenticate, authorize("Lister"), validateCreateListing
  *             type: object
  *             properties:
  *               roomsAvailable:
- *                 type: string
+ *                 type: number
  *                 example: 4
  *               description:
  *                 type: string
- *                 example: "Updated description for the apartment."
+ *                 example: "Spacious 3-bedroom apartment, fully furnished."
  *               price:
  *                 type: number
  *                 example: 5000
