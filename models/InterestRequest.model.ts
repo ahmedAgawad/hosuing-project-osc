@@ -9,7 +9,7 @@ import mongoose from "mongoose";
  *         - listing
  *         - seeker
  *       properties:
- *         listing:
+ *         listingId:
  *           type: string
  *           description: The ID of the listing being requested
  *         seeker:

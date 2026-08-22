@@ -12,7 +12,36 @@ const router = Router();
  * /api/listings:
  *   get:
  *     tags: [Listings]
- *     summary: Get all listings
+ *     summary: Get all listings with optional filtering
+ *     parameters:
+ *       - in: query
+ *         name: location
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: Filter listings by location keyword
+ *         example: Nasr City
+ *       - in: query
+ *         name: minPrice
+ *         required: false
+ *         schema:
+ *           type: number
+ *         description: Minimum price filter
+ *         example: 2000
+ *       - in: query
+ *         name: maxPrice
+ *         required: false
+ *         schema:
+ *           type: number
+ *         description: Maximum price filter
+ *         example: 5000
+ *       - in: query
+ *         name: roomsAvailable
+ *         required: false
+ *         schema:
+ *           type: integer
+ *         description: Filter by number of available rooms
+ *         example: 2
  *     responses:
  *       200:
  *         description: Successfully retrieved all listings
@@ -60,13 +89,31 @@ router.get("/:id",logger, getListingById);
  * /api/listings:
  *   post:
  *     tags: [Listings]
- *     summary: create a new Listing
+ *     summary: Create a new listing
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Listing'
+ *             type: object
+ *             required:
+ *               - title
+ *               - description
+ *               - price
+ *               - location
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: "Apartment for rent near university"
+ *               description:
+ *                 type: string
+ *                 example: "Spacious 3-bedroom apartment, fully furnished."
+ *               price:
+ *                 type: number
+ *                 example: 4500
+ *               location:
+ *                 type: string
+ *                 example: "Nasr City, Cairo"
  *     responses:
  *       201:
  *         description: Listing created successfully
@@ -90,20 +137,34 @@ router.post("/",logger, authenticate, authorize("Lister"), validateCreateListing
  *       - in: path
  *         name: id
  *         required: true
- *         description: The listing ID
  *         schema:
  *           type: string
+ *         description: The Listing ID
+ *         example: "66ba21c9f4d2a1b3c4d5e6f9"
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Listing'
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: "Updated Apartment Title"
+ *               description:
+ *                 type: string
+ *                 example: "Updated description for the apartment."
+ *               price:
+ *                 type: number
+ *                 example: 5000
+ *               location:
+ *                 type: string
+ *                 example: "Nasr City, Cairo"
  *     responses:
  *       200:
  *         description: Listing updated successfully
  *       400:
- *         description: Bad request - Invalid input data
+ *         description: Bad request - Invalid input data or ID format
  *       401:
  *         description: Unauthorized - Token is missing or invalid
  *       403:

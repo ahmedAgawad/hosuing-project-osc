@@ -24,7 +24,14 @@ const router = Router();
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/InterestRequest'
+ *             type: object
+ *             required:
+ *               - listingId
+ *             properties:
+ *               listingId:
+ *                 type: string
+ *                 description: The ID of the listing to create an interest request for
+ *                 example: "66ba21c9f4d2a1b3c4d5e6f9"
  *     responses:
  *       201:
  *         description: Interest request submitted successfully
@@ -146,7 +153,15 @@ router.get("/listing/:id", logger, authenticate, authorize("Lister"), getRequest
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/InterestRequest'
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [ accepted, declined]
+ *                 description: The new status of the interest request
+ *                 example: accepted
  *     responses:
  *       200:
  *         description: Request status updated successfully
